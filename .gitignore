@@ -50,6 +50,11 @@ application-secrets.properties
 # Compiled class files
 *.class
 
+# Angular
+frontend/.angular/cache/
+frontend/dist/
+frontend/node_modules/
+
 # Jar / War
 *.jar
 *.war

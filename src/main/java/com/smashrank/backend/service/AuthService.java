@@ -62,7 +62,7 @@ public class AuthService {
         return UriComponentsBuilder.fromHttpUrl("https://start.gg/oauth/authorize")
                 .queryParam("response_type", "code")
                 .queryParam("client_id", clientId)
-                .queryParam("scope", "user:read user:email")
+                .queryParam("scope", "user.identity user.email")
                 .queryParam("redirect_uri", redirectUri)
                 .build()
                 .toUriString();

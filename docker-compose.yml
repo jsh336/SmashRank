@@ -1,0 +1,66 @@
+services:
+
+  # -------------------------------------------------------
+  # PostgreSQL — Base de datos
+  # -------------------------------------------------------
+  smashrank-postgresdb:
+    image: postgres:16-alpine
+    container_name: smashrank-PostgresDB
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: smashrank_db
+      POSTGRES_USER: smashadmin
+      POSTGRES_PASSWORD: smashranksecret
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U smashadmin -d smashrank_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # -------------------------------------------------------
+  # SmashRank — Backend
+  # -------------------------------------------------------
+  smashrank-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: smashrank-backend
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://smashrank-postgresdb:5432/smashrank_db
+      SPRING_DATASOURCE_USERNAME: smashadmin
+      SPRING_DATASOURCE_PASSWORD: smashranksecret
+      STARTGG_API_TOKEN: ${STARTGG_API_TOKEN:-YOUR_TOKEN_HERE}
+      STARTGG_REDIRECT_URI: ${STARTGG_REDIRECT_URI:-http://localhost:4200/auth/callback}
+      STARTGG_COUNTRY_FILTER: ${STARTGG_COUNTRY_FILTER:-Spain}
+      STARTGG_REGION_FILTER: ${STARTGG_REGION_FILTER:-Andalusia}
+      STARTGG_CLIENT_ID: ${STARTGG_CLIENT_ID:-placeholder_client_id}
+      STARTGG_CLIENT_SECRET: ${STARTGG_CLIENT_SECRET:-placeholder_client_secret}
+    depends_on:
+      smashrank-postgresdb:
+        condition: service_healthy
+
+  # -------------------------------------------------------
+  # SmashRank — Frontend (Nginx + Angular production build)
+  # -------------------------------------------------------
+  smashrank-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: smashrank-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "4200:80"
+    depends_on:
+      - smashrank-backend
+
+volumes:
+  postgres_data:
+    driver: local

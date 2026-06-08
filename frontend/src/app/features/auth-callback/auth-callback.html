@@ -1,0 +1,45 @@
+<div class="min-h-screen bg-background flex flex-col items-center justify-center p-6 text-slate-100 font-sans relative overflow-hidden">
+  
+  <!-- Brillo de fondo -->
+  <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.08)_0%,transparent_70%)] pointer-events-none"></div>
+
+  <div class="glass max-w-md w-full p-8 rounded-3xl text-center space-y-6 shadow-glow-primary relative z-10">
+    
+    <!-- Cabecera -->
+    <div class="flex flex-col items-center gap-2">
+      <div class="h-12 w-12 rounded-2xl bg-gradient-to-tr from-primary to-accent-purple flex items-center justify-center shadow-glow-primary mb-2">
+        <span class="font-extrabold text-2xl text-white">S</span>
+      </div>
+      <h2 class="text-2xl font-black tracking-wider bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">SMASHRANK</h2>
+      <span class="text-[10px] text-primary font-bold tracking-widest uppercase">AUTENTICACIÓN</span>
+    </div>
+
+    <!-- Cargando -->
+    <div *ngIf="!errorMessage" class="py-8 flex flex-col items-center justify-center gap-4 animate-fade-in">
+      <div class="relative flex items-center justify-center">
+        <!-- Spinner neón -->
+        <div class="h-16 w-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+        <div class="absolute h-8 w-8 rounded-full bg-accent-purple/20 animate-pulse"></div>
+      </div>
+      <p class="text-sm text-slate-300 font-semibold tracking-wide animate-pulse">Conectando con Start.gg...</p>
+      <p class="text-xs text-slate-500">Estamos verificando tu perfil de usuario y estableciendo tu sesión segura.</p>
+    </div>
+
+    <!-- Error -->
+    <div *ngIf="errorMessage" class="py-4 space-y-4">
+      <div class="h-12 w-12 rounded-full bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-500 text-2xl mx-auto">
+        ⚠️
+      </div>
+      <p class="text-sm font-semibold text-slate-200">{{ errorMessage }}</p>
+      <p class="text-xs text-slate-500 leading-relaxed">
+        Esto puede deberse a problemas de red o a un token temporal inválido.
+      </p>
+      <button 
+        (click)="retry()"
+        class="w-full bg-slate-900 hover:bg-slate-800 border border-white/10 hover:border-white/20 text-white font-bold py-2.5 px-4 rounded-xl text-sm transition-all duration-200">
+        Volver al Inicio
+      </button>
+    </div>
+
+  </div>
+</div>

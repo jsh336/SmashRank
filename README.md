@@ -1,5 +1,7 @@
 # SmashRank 🎮
 
+SmashRank es una plataforma web diseñada para gestionar perfiles de usuarios y calcular el ranking competitivo de jugadores de **Super Smash Bros. Ultimate**, utilizando un sistema de puntuación dinámico para clasificar a los mejores luchadores de la comunidad a partir de los datos de torneos reales.
+
 Sistema de clasificación y ranking para competidores de **Super Smash Bros**, integrado con la API GraphQL de **[Start.gg](https://start.gg)**.
 
 ---

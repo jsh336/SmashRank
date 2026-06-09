@@ -21,52 +21,6 @@ Sistema de clasificación y ranking para competidores de **Super Smash Bros**, i
 
 ---
 
-## 📁 Estructura del Proyecto
-
-```
-smashrank/
-├── src/
-│   ├── main/
-│   │   ├── java/com/smashrank/
-│   │   │   ├── SmashRankApplication.java        # Entry point
-│   │   │   ├── config/
-│   │   │   │   └── WebClientConfig.java          # WebClient para Start.gg
-│   │   │   ├── controller/
-│   │   │   │   ├── PlayerController.java         # REST /api/v1/players
-│   │   │   │   └── StartGgController.java        # REST /api/v1/startgg
-│   │   │   ├── service/
-│   │   │   │   ├── PlayerService.java            # Lógica de negocio players
-│   │   │   │   └── StartGgService.java           # Integración Start.gg GraphQL
-│   │   │   ├── repository/
-│   │   │   │   ├── PlayerRepository.java         # JPA Player
-│   │   │   │   └── TournamentResultRepository.java
-│   │   │   ├── entity/
-│   │   │   │   ├── Player.java                   # Entidad jugador
-│   │   │   │   └── TournamentResult.java         # Entidad resultado torneo
-│   │   │   ├── dto/
-│   │   │   │   ├── PlayerRequestDTO.java
-│   │   │   │   ├── PlayerResponseDTO.java
-│   │   │   │   ├── TournamentResultResponseDTO.java
-│   │   │   │   └── GraphQLRequestDTO.java
-│   │   │   └── exception/
-│   │   │       ├── ResourceNotFoundException.java
-│   │   │       ├── DuplicateResourceException.java
-│   │   │       └── GlobalExceptionHandler.java
-│   │   └── resources/
-│   │       └── application.properties
-│   └── test/
-│       ├── java/com/smashrank/
-│       │   └── SmashRankApplicationTests.java
-│       └── resources/
-│           └── application.properties            # H2 para tests
-├── docker-compose.yml
-├── Dockerfile
-├── pom.xml
-└── .gitignore
-```
-
----
-
 ## 🚀 Inicio Rápido
 
 ### Prerrequisitos

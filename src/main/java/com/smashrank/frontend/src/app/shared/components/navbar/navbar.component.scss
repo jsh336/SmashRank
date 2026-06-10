@@ -106,6 +106,33 @@
       border-radius: 99px;
     }
   }
+
+  &--highlight {
+    display: flex; align-items: center; gap: 5px;
+    color: #FF6B35;
+    &:hover { color: #ff8557; }
+    &.active {
+      color: #FF6B35;
+      text-shadow: 0 0 12px rgba(255, 107, 53, 0.4);
+      &::after { background: #FF6B35; box-shadow: 0 0 8px rgba(255, 107, 53, 0.6); }
+    }
+  }
+
+  &--admin {
+    display: flex; align-items: center; gap: 5px;
+    color: #F7C948;
+    &:hover { color: #fcd85e; }
+    &.active {
+      color: #F7C948;
+      text-shadow: 0 0 12px rgba(247, 201, 72, 0.4);
+      &::after { background: #F7C948; box-shadow: 0 0 8px rgba(247, 201, 72, 0.6); }
+    }
+  }
+}
+
+.nav-icon {
+  width: 14px; height: 14px;
+  flex-shrink: 0;
 }
 
 // Auth Area

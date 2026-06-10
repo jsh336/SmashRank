@@ -1,0 +1,283 @@
+<div class="admin-page">
+
+  <!-- HEADER -->
+  <div class="admin-header">
+    <div class="header-badge">
+      <span class="badge-dot badge-dot--yellow"></span>
+      <span class="badge-text">PANEL DE ADMINISTRACIÓN</span>
+    </div>
+    <h1 class="admin-title">Admin <span class="title-yellow">Dashboard</span></h1>
+    <p class="admin-subtitle">Gestión de jugadores, ajuste de puntos y recálculo del ranking</p>
+  </div>
+
+  <!-- ACCESS DENIED for non-admins -->
+  <div class="access-denied" *ngIf="!authService.isAdmin()">
+    <div class="denied-icon">🔒</div>
+    <h2>Acceso Restringido</h2>
+    <p>Necesitas iniciar sesión como administrador para acceder a este panel.</p>
+  </div>
+
+  <!-- ADMIN CONTENT -->
+  <div *ngIf="authService.isAdmin()">
+
+    <!-- TABS -->
+    <div class="tabs">
+      <button class="tab-btn" [class.tab-btn--active]="activeTab === 'players'" (click)="setTab('players')" id="tab-players">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="tab-icon">
+          <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/>
+        </svg>
+        Jugadores
+      </button>
+      <button class="tab-btn" [class.tab-btn--active]="activeTab === 'adjust'" (click)="setTab('adjust')" id="tab-adjust">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="tab-icon">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        Ajuste Manual
+      </button>
+      <button class="tab-btn" [class.tab-btn--active]="activeTab === 'recalculate'" (click)="setTab('recalculate')" id="tab-recalculate">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="tab-icon">
+          <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H18.2"/>
+        </svg>
+        Recálculo Global
+      </button>
+    </div>
+
+    <!-- ===== TAB: PLAYERS ===== -->
+    <div class="tab-content" *ngIf="activeTab === 'players'">
+
+      <!-- Toolbar -->
+      <div class="toolbar">
+        <div class="search-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="search-icon">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input
+            type="text" placeholder="Buscar jugador..."
+            [(ngModel)]="searchQuery" (ngModelChange)="filterPlayers()"
+            class="search-input" id="player-search">
+        </div>
+        <button (click)="toggleCreateForm()" class="btn-primary" id="btn-new-player">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="btn-icon-sm">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          Nuevo Jugador
+        </button>
+      </div>
+
+      <!-- Create Form -->
+      <div class="form-card" *ngIf="showCreateForm">
+        <h3 class="form-title">Crear Nuevo Jugador</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">GamerTag *</label>
+            <input type="text" [(ngModel)]="createForm.gamertag" class="form-input" id="create-gamertag" placeholder="Ej: MkLeo">
+          </div>
+          <div class="form-group">
+            <label class="form-label">País</label>
+            <input type="text" [(ngModel)]="createForm.country" class="form-input" id="create-country">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Slug Start.gg</label>
+            <input type="text" [(ngModel)]="createForm.startGgSlug" class="form-input" id="create-slug" placeholder="Ej: user/abc123">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button (click)="createPlayer()" class="btn-primary" [disabled]="!createForm.gamertag">Crear</button>
+          <button (click)="toggleCreateForm()" class="btn-ghost">Cancelar</button>
+        </div>
+      </div>
+
+      <!-- Loading -->
+      <div class="loading-state" *ngIf="loadingPlayers">
+        <div class="spinner"></div>
+        <p>Cargando jugadores...</p>
+      </div>
+
+      <!-- Players Table -->
+      <div class="table-wrapper" *ngIf="!loadingPlayers">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Jugador</th>
+              <th>País</th>
+              <th>Start.gg ID</th>
+              <th class="text-center">Puntos</th>
+              <th class="text-center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Edit row -->
+            <tr *ngIf="editingPlayer" class="edit-row">
+              <td>
+                <input type="text" [(ngModel)]="editForm.gamertag" class="inline-input" id="edit-gamertag">
+              </td>
+              <td>
+                <input type="text" [(ngModel)]="editForm.country" class="inline-input" id="edit-country">
+              </td>
+              <td>
+                <input type="text" [(ngModel)]="editForm.startGgSlug" class="inline-input" placeholder="user/xxx" id="edit-slug">
+              </td>
+              <td class="text-center">
+                <span class="pts-chip">{{ editingPlayer.rankPoints }}</span>
+              </td>
+              <td class="text-center">
+                <div class="action-row">
+                  <button (click)="saveEdit()" class="btn-sm btn-primary">Guardar</button>
+                  <button (click)="cancelEdit()" class="btn-sm btn-ghost">Cancelar</button>
+                </div>
+              </td>
+            </tr>
+            <!-- Player rows -->
+            <tr *ngFor="let player of filteredPlayers" class="data-row" [class.data-row--editing]="editingPlayer?.id === player.id">
+              <td>
+                <span class="player-name-cell">{{ player.gamertag }}</span>
+              </td>
+              <td><span class="muted-text">{{ player.country || '—' }}</span></td>
+              <td>
+                <span class="code-chip" *ngIf="player.startGgUserId">{{ player.startGgUserId }}</span>
+                <span class="muted-text" *ngIf="!player.startGgUserId">No vinculado</span>
+              </td>
+              <td class="text-center">
+                <span class="pts-chip">{{ player.rankPoints }}</span>
+              </td>
+              <td class="text-center">
+                <div class="action-row" *ngIf="editingPlayer?.id !== player.id">
+                  <button (click)="startEdit(player)" class="action-btn" title="Editar" [id]="'edit-' + player.id">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                  </button>
+                  <button (click)="syncPlayer(player)" class="action-btn action-btn--sync" title="Sincronizar con Start.gg" [id]="'sync-' + player.id" [disabled]="syncingId === player.id">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" [class.spin]="syncingId === player.id">
+                      <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H18.2"/>
+                    </svg>
+                  </button>
+                  <button (click)="deletePlayer(player)" class="action-btn action-btn--delete" title="Eliminar" [id]="'delete-' + player.id" [disabled]="deletingId === player.id">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="filteredPlayers.length === 0 && !loadingPlayers">
+              <td colspan="5" class="empty-state">No se encontraron jugadores</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== TAB: ADJUST POINTS ===== -->
+    <div class="tab-content" *ngIf="activeTab === 'adjust'">
+      <div class="adjust-grid">
+
+        <!-- Form -->
+        <div class="card">
+          <h3 class="card-title">Ajuste Manual de Puntos</h3>
+
+          <div class="form-group">
+            <label class="form-label">Buscar Jugador</label>
+            <div class="search-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="search-icon">
+                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+              <input type="text" [(ngModel)]="adjustSearch" (ngModelChange)="searchForAdjust()" class="search-input" id="adjust-search" placeholder="Escribe el gamertag...">
+            </div>
+          </div>
+
+          <div class="selected-player-card" *ngIf="adjustPlayer">
+            <span class="selected-label">Jugador seleccionado:</span>
+            <span class="selected-name">{{ adjustPlayer.gamertag }}</span>
+            <span class="selected-pts">{{ adjustPlayer.rankPoints }} pts actuales</span>
+          </div>
+
+          <div *ngIf="adjustPlayer" class="form-group">
+            <label class="form-label">Ajuste de Puntos</label>
+            <div class="delta-input-wrap">
+              <button (click)="adjustDelta = adjustDelta - 10" class="delta-btn delta-btn--minus">-10</button>
+              <input type="number" [(ngModel)]="adjustDelta" class="form-input delta-input" id="adjust-delta" placeholder="0">
+              <button (click)="adjustDelta = adjustDelta + 10" class="delta-btn delta-btn--plus">+10</button>
+            </div>
+            <p class="delta-preview" *ngIf="adjustDelta !== 0">
+              {{ adjustPlayer.rankPoints }} → <strong [class.green]="adjustDelta > 0" [class.red]="adjustDelta < 0">{{ adjustPlayer.rankPoints + adjustDelta }}</strong>
+              pts ({{ adjustDelta > 0 ? '+' : '' }}{{ adjustDelta }})
+            </p>
+          </div>
+
+          <div *ngIf="adjustPlayer" class="form-group">
+            <label class="form-label">Motivo (opcional)</label>
+            <input type="text" [(ngModel)]="adjustReason" class="form-input" id="adjust-reason" placeholder="Ej: Corrección resultado torneo X">
+          </div>
+
+          <button
+            *ngIf="adjustPlayer"
+            (click)="applyAdjustment()"
+            [disabled]="adjustDelta === 0 || adjusting"
+            class="btn-primary btn-full"
+            id="btn-apply-adjust">
+            {{ adjusting ? 'Aplicando...' : 'Aplicar Ajuste' }}
+          </button>
+        </div>
+
+        <!-- History -->
+        <div class="card">
+          <h3 class="card-title">Historial de Ajustes (sesión actual)</h3>
+          <div class="history-list">
+            <div class="history-empty" *ngIf="adjustHistory.length === 0">
+              <p>Sin ajustes realizados esta sesión</p>
+            </div>
+            <div *ngFor="let h of adjustHistory" class="history-item">
+              <div class="history-player">{{ h.playerName }}</div>
+              <div class="history-delta" [class.green]="h.delta > 0" [class.red]="h.delta < 0">
+                {{ h.delta > 0 ? '+' : '' }}{{ h.delta }} pts
+              </div>
+              <div class="history-reason">{{ h.reason }}</div>
+              <div class="history-time">{{ h.at | date:'HH:mm:ss' }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== TAB: RECALCULATE ===== -->
+    <div class="tab-content" *ngIf="activeTab === 'recalculate'">
+      <div class="recalc-card card">
+        <h3 class="card-title">Recálculo Global del Ranking</h3>
+        <p class="card-desc">
+          Este proceso recorre todos los resultados de torneos almacenados en la base de datos y recalcula los puntos totales de cada jugador, aplicando el algoritmo de puntuación basado en placement y número de entrants.
+        </p>
+
+        <div class="warning-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="warning-icon">
+            <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+          <p>Esta operación sobreescribirá los puntos actuales de todos los jugadores con los valores recalculados.</p>
+        </div>
+
+        <button
+          (click)="recalculate()"
+          [disabled]="recalculating"
+          class="btn-primary btn-danger"
+          id="btn-recalculate">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon-sm" [class.spin]="recalculating">
+            <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H18.2"/>
+          </svg>
+          {{ recalculating ? 'Recalculando...' : 'Iniciar Recálculo Global' }}
+        </button>
+
+        <div class="recalc-result" *ngIf="recalcResult">
+          <div class="result-success" *ngIf="!recalcResult.error">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="result-icon">
+              <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+            <p>Recálculo completado exitosamente</p>
+            <pre class="result-data">{{ recalcResult | json }}</pre>
+          </div>
+          <div class="result-error" *ngIf="recalcResult.error">
+            <p>❌ Error en el recálculo. Consulta los logs del servidor.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

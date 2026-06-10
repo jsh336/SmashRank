@@ -31,7 +31,11 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers("/api/v1/ranking").permitAll()
                         .requestMatchers("/api/v1/ranking/players/**").permitAll()
-                        
+                        .requestMatchers("/api/v1/startgg/tournaments/region").permitAll()
+                        .requestMatchers("/api/v1/startgg/ranking/regional").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/v1/saved-rankings").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/v1/saved-rankings/**").permitAll()
+
                         // Solo los administradores pueden disparar el recálculo
                         .requestMatchers("/api/v1/ranking/recalculate").hasRole("ADMIN")
                         

@@ -6,6 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.smashrank.backend.dto.TournamentResultResponseDTO;
+import com.smashrank.backend.dto.TournamentSummaryDTO;
+import com.smashrank.backend.dto.RegionalRankingResultDTO;
 import com.smashrank.backend.service.StartGgService;
 
 import reactor.core.publisher.Mono;
@@ -85,6 +87,45 @@ public class StartGgController {
         }
 
         return startGgService.executeGraphQLQuery(query, variables)
+                .map(ResponseEntity::ok);
+    }
+
+    /**
+     * GET /api/v1/startgg/tournaments/region
+     * Busca torneos de SSB Ultimate en una provincia española.
+     * Params: region (nombre provincia en inglés), afterDate (epoch seconds), page, perPage
+     */
+    @GetMapping("/tournaments/region")
+    public Mono<ResponseEntity<List<TournamentSummaryDTO>>> getTournamentsByRegion(
+            @RequestParam String region,
+            @RequestParam long afterDate,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "25") int perPage) {
+        log.info("GET /api/v1/startgg/tournaments/region - región: {}, afterDate: {}", region, afterDate);
+        return startGgService.searchTournamentsByRegion(region, afterDate, page, perPage)
+                .map(ResponseEntity::ok);
+    }
+
+    /**
+     * POST /api/v1/startgg/ranking/regional
+     * Calcula el ranking regional con los torneos seleccionados.
+     * Body: { "region": "Sevilla", "tournamentIds": ["123", "456"], "dateFrom": "2024-01-01", "dateTo": "2025-01-01" }
+     */
+    @PostMapping("/ranking/regional")
+    public Mono<ResponseEntity<RegionalRankingResultDTO>> calculateRegionalRanking(
+            @RequestBody Map<String, Object> body) {
+        String region = (String) body.get("region");
+        @SuppressWarnings("unchecked")
+        List<String> tournamentIds = (List<String>) body.get("tournamentIds");
+        String dateFrom = (String) body.getOrDefault("dateFrom", "");
+        String dateTo = (String) body.getOrDefault("dateTo", "");
+
+        if (region == null || tournamentIds == null || tournamentIds.isEmpty()) {
+            return Mono.just(ResponseEntity.badRequest().build());
+        }
+
+        log.info("POST /api/v1/startgg/ranking/regional - región: {}, {} torneos", region, tournamentIds.size());
+        return startGgService.calculateRegionalRanking(region, tournamentIds, dateFrom, dateTo)
                 .map(ResponseEntity::ok);
     }
 }

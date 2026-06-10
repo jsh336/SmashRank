@@ -21,42 +21,6 @@ Sistema de clasificación y ranking para competidores de **Super Smash Bros**, i
 
 ---
 
-## 🚀 Inicio Rápido
-
-### Prerrequisitos
-- Java 21+
-- Maven 3.9+
-- Docker & Docker Compose
-
-### 1. Clonar y configurar el token de Start.gg
-
-Edita `src/main/resources/application.properties` y reemplaza:
-```properties
-startgg.api.token=YOUR_STARTGG_BEARER_TOKEN_HERE
-```
-> Obtén tu token en: https://developer.start.gg/docs/authentication
-
-### 2. Levantar solo PostgreSQL con Docker
-
-```bash
-docker-compose up postgres-db -d
-```
-
-### 3. Ejecutar la aplicación localmente
-
-```bash
-mvn spring-boot:run
-```
-
-### 4. O levantar todo el stack con Docker Compose
-
-```bash
-docker-compose up --build
-```
-
-La aplicación estará disponible en: `http://localhost:8080`
-
----
 
 ## 📡 API REST — Endpoints
 

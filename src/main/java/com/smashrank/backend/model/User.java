@@ -41,7 +41,7 @@ public class User {
     private String email;
 
     /** Enlace a la imagen de avatar del usuario */
-    @Column(name = "avatar_url", length = 500)
+    @Column(name = "avatar_url", columnDefinition = "TEXT")
     private String avatarUrl;
 
     /** Rol de acceso en la aplicación (ej: USER, ADMIN) */

@@ -115,19 +115,18 @@ public class AuthService {
 
         log.info("Intercambiando código de autorización con Start.gg (application/json)");
 
-        Map<String, Object> tokenRequest = Map.of(
-                "grant_type", "authorization_code",
-                "client_id", clientId,
-                "client_secret", clientSecret,
-                "code", code,
-                "redirect_uri", redirectUri,
-                "scope", "user.identity user.email"
-        );
+        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+        formData.add("grant_type", "authorization_code");
+        formData.add("client_id", clientId);
+        formData.add("client_secret", clientSecret);
+        formData.add("code", code);
+        formData.add("redirect_uri", redirectUri);
+        formData.add("scope", "user.identity user.email");
 
         return webClientBuilder.build().post()
                 .uri("https://api.start.gg/oauth/access_token")
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(tokenRequest)
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .body(BodyInserters.fromFormData(formData))
                 .retrieve()
                 .bodyToMono(Map.class)
                 .flatMap(tokenResponse -> {
@@ -253,18 +252,17 @@ public class AuthService {
                         return Mono.error(new RuntimeException("No hay refresh_token disponible para el usuario Start.gg " + startGgUserId));
                     }
 
-                    Map<String, Object> refreshRequest = Map.of(
-                            "grant_type", "refresh_token",
-                            "client_id", clientId,
-                            "client_secret", clientSecret,
-                            "refresh_token", user.getRefreshToken(),
-                            "scope", "user.identity user.email"
-                    );
+                    MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+                    formData.add("grant_type", "refresh_token");
+                    formData.add("client_id", clientId);
+                    formData.add("client_secret", clientSecret);
+                    formData.add("refresh_token", user.getRefreshToken());
+                    formData.add("scope", "user.identity user.email");
 
                     return webClientBuilder.build().post()
                             .uri("https://api.start.gg/oauth/access_token")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .bodyValue(refreshRequest)
+                            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                            .body(BodyInserters.fromFormData(formData))
                             .retrieve()
                             .bodyToMono(Map.class)
                             .flatMap(tokenResponse -> {

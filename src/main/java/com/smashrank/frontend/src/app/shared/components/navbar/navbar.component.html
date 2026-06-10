@@ -2,17 +2,7 @@
   <div class="navbar-inner">
     <!-- Brand Section -->
     <a routerLink="/" class="navbar-brand">
-      <div class="brand-icon">
-        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="brand-svg">
-          <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" fill="url(#navbar-bolt-gradient)" />
-          <defs>
-            <linearGradient id="navbar-bolt-gradient" x1="3" y1="2" x2="21" y2="22" gradientUnits="userSpaceOnUse">
-              <stop stop-color="#FF6B35"/>
-              <stop offset="1" stop-color="#F7C948"/>
-            </linearGradient>
-          </defs>
-        </svg>
-      </div>
+      <img src="assets/logo.svg" alt="SmashRank Logo" class="brand-logo-img">
       <div class="brand-text">
         <span class="brand-name">SmashRank</span>
         <span class="brand-subtitle">Regional Tournament Calculator</span>
@@ -22,7 +12,7 @@
     <!-- Navigation links -->
     <div class="navbar-links">
       <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">Inicio</a>
-      <a routerLink="/ranking-regional" routerLinkActive="active" class="nav-link nav-link--highlight">
+      <a routerLink="/calcular-ranking" routerLinkActive="active" class="nav-link nav-link--highlight">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="nav-icon">
           <path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 9m0 8V9m0 0L9 7"/>
         </svg>

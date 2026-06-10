@@ -113,7 +113,7 @@ public class AuthService {
             ));
         }
 
-        log.info("Intercambiando código de autorización con Start.gg");
+        log.info("Intercambiando código de autorización con Start.gg (application/json)");
 
         Map<String, Object> tokenRequest = Map.of(
                 "grant_type", "authorization_code",

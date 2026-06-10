@@ -49,7 +49,12 @@ export class SavedRankingsComponent implements OnInit {
   selectRanking(ranking: SavedRanking): void {
     this.selectedRanking = ranking;
     try {
-      this.rankingEntries = JSON.parse(ranking.rankingData);
+      const allEntries = JSON.parse(ranking.rankingData) as RegionalRankingEntry[];
+      this.rankingEntries = allEntries.filter(e => !e.hidden);
+      // Reasignar posiciones visuales secuenciales para la lista filtrada
+      this.rankingEntries.forEach((e, idx) => {
+        e.position = idx + 1;
+      });
     } catch (e) {
       console.error('Error parsing ranking data:', e);
       this.rankingEntries = [];
@@ -141,6 +146,11 @@ export class SavedRankingsComponent implements OnInit {
     }
   }
 
+  deleteRankingDirect(id: number, event: Event): void {
+    event.stopPropagation();
+    this.deleteRanking(id);
+  }
+
   togglePlayer(userId: string): void {
     if (this.editing) return;
     this.expandedPlayer = this.expandedPlayer === userId ? null : userId;
@@ -171,11 +181,25 @@ export class SavedRankingsComponent implements OnInit {
 
   exportToCsv(): void {
     if (!this.selectedRanking) return;
-    
-    const headers = ['Posicion', 'Jugador', 'Start.gg User ID', 'Puntos Totales', 'Puntos Posibles', 'Eficiencia (%)', 'Torneos Jugados', 'Mejor Posicion', 'Victorias Notables', 'Upsets'];
-    
+
+    // Separador punto y coma — estándar europeo para Excel
+    const SEP = ';';
+
+    const headers = [
+      'Posicion', 'Jugador', 'Start.gg ID',
+      'Puntos Totales', 'Puntos Posibles', 'Eficiencia (%)',
+      'Torneos Jugados', 'Mejor Posicion',
+      'Victorias Notables', 'Upsets',
+      'Torneos Asistidos', 'Detalle Victorias'
+    ];
+
     const rows = this.rankingEntries.map(player => {
       const upsets = this.getUpsets(player.notableWins).length;
+      const winsDetail = (player.notableWins || [])
+        .map(w => `${w.isUpset ? 'UPSET' : 'NOTABLE'}: ${w.opponentName} @ ${w.tournamentName}`)
+        .join(' | ');
+      const tournamentsStr = (player.tournamentsAttended || []).join(' | ');
+
       return [
         player.position,
         player.playerName,
@@ -186,28 +210,36 @@ export class SavedRankingsComponent implements OnInit {
         player.tournamentsPlayed,
         player.bestPlacement,
         player.notableWins ? player.notableWins.length : 0,
-        upsets
+        upsets,
+        tournamentsStr,
+        winsDetail
       ];
     });
 
-    const csvContent = [
-      headers.join(','),
-      ...rows.map(row => row.map(val => {
-        const strVal = String(val);
-        return `"${strVal.replace(/"/g, '""')}"`;
-      }).join(','))
-    ].join('\n');
+    const escape = (val: unknown) => {
+      const str = String(val ?? '');
+      return `"${str.replace(/"/g, '""')}"`;
+    };
 
-    const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
+    const csvContent = [
+      headers.map(escape).join(SEP),
+      ...rows.map(row => row.map(escape).join(SEP))
+    ].join('\r\n');
+
+    // BOM UTF-8 para compatibilidad con Excel
+    const blob = new Blob(
+      [new Uint8Array([0xEF, 0xBB, 0xBF]), csvContent],
+      { type: 'text/csv;charset=utf-8;' }
+    );
+
     const url = URL.createObjectURL(blob);
-    
-    const filename = `ranking_guardado_${this.selectedRanking.region.toLowerCase()}_${new Date().toISOString().split('T')[0]}.csv`;
-    link.setAttribute('href', url);
-    link.setAttribute('download', filename);
-    link.style.visibility = 'hidden';
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `ranking_${this.selectedRanking.region.toLowerCase().replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.csv`;
+    link.style.display = 'none';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   }
 }

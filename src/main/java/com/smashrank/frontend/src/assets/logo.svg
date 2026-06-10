@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <!-- Rounded red background -->
+  <rect x="5" y="5" width="90" height="90" rx="20" fill="url(#bg-red-gradient)" />
+  
+  <!-- Trophy shadow / glow -->
+  <circle cx="50" cy="50" r="30" fill="#F7C948" fill-opacity="0.05" filter="blur(8px)" />
+
+  <!-- Trophy Gold Cup Handles -->
+  <!-- Left Handle -->
+  <path d="M35 30H27C21 30 21 45 27 45H35" stroke="#F7C948" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+  <!-- Right Handle -->
+  <path d="M65 30H73C79 30 79 45 73 45H65" stroke="#F7C948" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+  
+  <!-- Cup body -->
+  <path d="M33 22H67V42C67 52 59 60 50 60C41 60 33 52 33 42V22Z" fill="#F7C948" stroke="#E2A62C" stroke-width="3" stroke-linejoin="round" />
+  <!-- Cup top rim -->
+  <ellipse cx="50" cy="22" rx="17" ry="2" fill="#FFE593" />
+  
+  <!-- Stem -->
+  <path d="M46 60H54V72H46V60Z" fill="#E2A62C" />
+  <path d="M38 72H62L58 78H42L38 72Z" fill="#F7C948" stroke="#E2A62C" stroke-width="1.5" />
+  
+  <!-- Red Base block -->
+  <rect x="34" y="78" width="32" height="12" rx="2" fill="#D32F2F" stroke="#B71C1C" stroke-width="2" />
+  <!-- Gold Plaque on base -->
+  <rect x="42" y="82" width="16" height="4" rx="0.5" fill="#FFE593" />
+
+  <!-- Sparkle details -->
+  <path d="M38 28L40 33L45 35L40 37L38 42L36 37L31 35L36 33L38 28Z" fill="#FFFFFF" opacity="0.9" />
+
+  <defs>
+    <!-- Solid Red/Crimson gradient background -->
+    <linearGradient id="bg-red-gradient" x1="5" y1="5" x2="95" y2="95" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#E53E3E" />
+      <stop offset="1" stop-color="#9B2C2C" />
+    </linearGradient>
+  </defs>
+</svg>

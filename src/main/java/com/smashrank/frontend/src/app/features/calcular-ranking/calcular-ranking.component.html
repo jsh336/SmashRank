@@ -1,0 +1,138 @@
+<!-- ===== CALCULAR RANKING PAGE ===== -->
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="page-header">
+    <div class="header-badge">
+      <span class="badge-dot"></span>
+      <span class="badge-text">SUPER SMASH BROS. ULTIMATE</span>
+    </div>
+    <h1 class="page-title">Calcular <span class="title-highlight">Ranking Regional</span></h1>
+    <p class="page-subtitle">Selecciona una provincia andaluza, elige los torneos y calcula el Power Ranking oficial</p>
+  </div>
+
+  <!-- STEP 1: PROVINCE SELECTOR -->
+  <section class="step-section">
+    <div class="step-header">
+      <div class="step-number">01</div>
+      <div>
+        <h2 class="step-title">Selecciona la Provincia</h2>
+        <p class="step-desc">Elige una de las 8 provincias de Andalucía</p>
+      </div>
+    </div>
+
+    <div class="provinces-grid">
+      <button
+        *ngFor="let province of provinces"
+        (click)="selectProvince(province)"
+        class="province-btn"
+        [class.province-btn--active]="selectedProvince?.key === province.key"
+        [id]="'province-' + province.key">
+        <span class="province-emoji">{{ province.emoji }}</span>
+        <span class="province-name">{{ province.label }}</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- STEP 2: DATE RANGE -->
+  <section class="step-section" *ngIf="selectedProvince">
+    <div class="step-header">
+      <div class="step-number">02</div>
+      <div>
+        <h2 class="step-title">Rango de Fechas</h2>
+        <p class="step-desc">Torneos desde <strong class="text-accent">{{ dateFromLabel }}</strong> hasta hoy</p>
+      </div>
+    </div>
+
+    <div class="range-control">
+      <div class="range-labels">
+        <span>1 mes</span>
+        <span class="range-value">{{ dateRangeMonths }} {{ dateRangeMonths === 1 ? 'mes' : 'meses' }}</span>
+        <span>24 meses</span>
+      </div>
+      <input
+        type="range"
+        id="date-range-slider"
+        [(ngModel)]="dateRangeMonths"
+        (change)="onDateRangeChange()"
+        min="1"
+        max="24"
+        step="1"
+        class="range-slider">
+    </div>
+  </section>
+
+  <!-- STEP 3: TOURNAMENT LIST -->
+  <section class="step-section" *ngIf="selectedProvince">
+    <div class="step-header">
+      <div class="step-number">03</div>
+      <div>
+        <h2 class="step-title">Torneos Encontrados</h2>
+        <p class="step-desc" *ngIf="!loadingTournaments && tournaments.length > 0">
+          {{ tournaments.length }} torneos en <strong class="text-accent">{{ selectedProvince.label }}</strong> — {{ selectedCount }} seleccionados
+        </p>
+      </div>
+      <div class="step-actions" *ngIf="tournaments.length > 0 && !loadingTournaments">
+        <button (click)="selectAll()" class="btn-ghost btn-sm">Todos</button>
+        <button (click)="selectNone()" class="btn-ghost btn-sm">Ninguno</button>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div class="loading-state" *ngIf="loadingTournaments">
+      <div class="spinner"></div>
+      <p>Buscando torneos en Start.gg...</p>
+    </div>
+
+    <!-- Error -->
+    <div class="error-state" *ngIf="errorMessage && !loadingTournaments">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="error-icon">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <p>{{ errorMessage }}</p>
+    </div>
+
+    <!-- Tournament cards -->
+    <div class="tournaments-grid" *ngIf="!loadingTournaments && tournaments.length > 0">
+      <div
+        *ngFor="let t of tournaments"
+        class="tournament-card"
+        [class.tournament-card--selected]="isSelected(t.id)"
+        (click)="toggleTournament(t.id)">
+        <div class="tournament-check">
+          <svg *ngIf="isSelected(t.id)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </div>
+        <div class="tournament-info">
+          <span class="tournament-name">{{ t.name }}</span>
+          <span class="tournament-meta">
+            <span>📅 {{ formatDate(t.startAt) }}</span>
+            <span *ngIf="t.city">📍 {{ t.city }}</span>
+            <span>👥 {{ t.ssbUltimateEntrants }} entrants</span>
+          </span>
+        </div>
+        <div class="tournament-entrants-badge">{{ t.ssbUltimateEntrants }}</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CALCULATE BUTTON -->
+  <div class="calculate-section" *ngIf="selectedProvince && tournaments.length > 0 && !loadingTournaments">
+    <button
+      (click)="calculateRanking()"
+      [disabled]="calculating || selectedCount === 0"
+      class="calculate-btn"
+      id="btn-calculate-ranking">
+      <svg *ngIf="!calculating" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
+        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+      </svg>
+      <svg *ngIf="calculating" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon spin">
+        <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H18.2"/>
+      </svg>
+      <span>{{ calculating ? 'Calculando...' : 'CALCULAR RANKING' }}</span>
+      <span class="btn-badge" *ngIf="!calculating">{{ selectedCount }} torneos</span>
+    </button>
+  </div>
+
+</div>

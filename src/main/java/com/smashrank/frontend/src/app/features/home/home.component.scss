@@ -15,11 +15,29 @@
 
 // ---- HERO SECTION ----
 .hero-section {
-  padding: 80px 0 60px;
+  padding: 60px 0 60px;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.hero-logo-wrapper {
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  filter: drop-shadow(0 8px 24px rgba(255, 107, 53, 0.18));
+}
+
+.hero-logo {
+  width: 96px;
+  height: 96px;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+  &:hover {
+    transform: scale(1.1) rotate(4deg);
+  }
 }
 
 .hero-badge {

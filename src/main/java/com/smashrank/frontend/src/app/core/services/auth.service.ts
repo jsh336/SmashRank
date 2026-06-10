@@ -80,11 +80,11 @@ export class AuthService {
   }
 
   /**
-   * Cierra la sesión activa borrando los tokens de LocalStorage.
+   * Cierra la sesión activa borrando los tokens de SessionStorage.
    */
   logout() {
-    localStorage.removeItem('smashrank_token');
-    localStorage.removeItem('smashrank_user');
+    sessionStorage.removeItem('smashrank_token');
+    sessionStorage.removeItem('smashrank_user');
     this.currentUserSignal.set(null);
   }
 
@@ -92,18 +92,18 @@ export class AuthService {
    * Retorna el token JWT actual.
    */
   getToken(): string | null {
-    return localStorage.getItem('smashrank_token');
+    return sessionStorage.getItem('smashrank_token');
   }
 
   private saveSession(token: string, user: UserProfile) {
-    localStorage.setItem('smashrank_token', token);
-    localStorage.setItem('smashrank_user', JSON.stringify(user));
+    sessionStorage.setItem('smashrank_token', token);
+    sessionStorage.setItem('smashrank_user', JSON.stringify(user));
     this.currentUserSignal.set(user);
   }
 
   private loadSessionFromStorage() {
     const token = this.getToken();
-    const userStr = localStorage.getItem('smashrank_user');
+    const userStr = sessionStorage.getItem('smashrank_user');
     
     if (token && userStr) {
       try {

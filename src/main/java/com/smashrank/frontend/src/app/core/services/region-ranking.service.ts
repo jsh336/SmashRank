@@ -35,6 +35,7 @@ export interface RegionalRankingEntry {
   bestPlacement: number;
   tournamentsAttended: string[];
   notableWins: NotableWin[];
+  hidden?: boolean;
 }
 
 export interface RegionalRankingResult {

@@ -128,8 +128,37 @@
 .card-header-meta {
   display: flex; justify-content: space-between;
   align-items: center; margin-bottom: 16px;
+  gap: 12px;
 }
-.card-date { font-size: 11px; color: #6b7280; }
+.card-date { font-size: 11px; color: #6b7280; flex-grow: 1; text-align: right; margin-right: 4px; }
+
+.btn-quick-delete {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #8b949e;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+  flex-shrink: 0;
+
+  &:hover {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.3);
+    color: #ef4444;
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.2);
+  }
+}
+
+.delete-icon-svg {
+  width: 14px;
+  height: 14px;
+}
 .card-title {
   font-size: 18px; font-weight: 700;
   color: #f0f6fc; margin: 0 0 16px;

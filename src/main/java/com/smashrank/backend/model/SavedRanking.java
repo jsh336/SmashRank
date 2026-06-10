@@ -37,7 +37,6 @@ public class SavedRanking {
     @Column(name = "total_players")
     private int totalPlayers;
 
-    @Lob
     @Column(name = "ranking_data", columnDefinition = "TEXT", nullable = false)
     private String rankingData; // Holds JSON string of RegionalRankingEntryDTO array
 

@@ -50,11 +50,11 @@ public class User {
     private String role = "USER";
 
     /** Token de acceso OAuth de Start.gg (para consultas en su nombre) */
-    @Column(name = "access_token", length = 500)
+    @Column(name = "access_token", columnDefinition = "TEXT")
     private String accessToken;
 
     /** Token de refresco OAuth de Start.gg */
-    @Column(name = "refresh_token", length = 500)
+    @Column(name = "refresh_token", columnDefinition = "TEXT")
     private String refreshToken;
 
     @Column(name = "created_at", nullable = false, updatable = false)
